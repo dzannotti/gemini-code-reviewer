@@ -58,6 +58,11 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
+      - name: Test Gemini CLI
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: echo "Say hi" | gemini -y -o json
+
       - name: Run Review
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
