@@ -14,7 +14,7 @@ const IGNORED_PATTERNS = [
   "composer.lock",
 ]
 
-const MAX_DIFF_CHARS = 20000
+const MAX_DIFF_CHARS = 10000
 
 export async function fetchDiff(base: string, _head: string): Promise<string> {
   const excludes = IGNORED_PATTERNS.map((p) => `:(exclude)${p}`).join(" ")
