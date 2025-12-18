@@ -83,6 +83,16 @@ export async function callGemini(prompt: string): Promise<GeminiResult> {
     const stderr = await new Response(proc.stderr).text()
 
     if (exitCode !== 0) {
+      // Try to capture the error report file gemini creates
+      const errorMatch = stderr.match(/Full report available at: ([^\s]+)/)
+      if (errorMatch) {
+        try {
+          const errorReport = await Bun.file(errorMatch[1]).text()
+          throw new Error(`Gemini CLI failed (exit ${exitCode}):\n${stderr}\n\nError report:\n${errorReport}`)
+        } catch {
+          // couldn't read error file, just use stderr
+        }
+      }
       throw new Error(`Gemini CLI failed (exit ${exitCode}): ${stderr}`)
     }
 
