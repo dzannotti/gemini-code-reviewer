@@ -1,4 +1,3 @@
-import { $ } from "bun"
 import type { GeminiResponse } from "./types"
 
 const TIMEOUT_MS = 8 * 60 * 1000 // 8 minutes (leave 2 min buffer for job timeout)
@@ -15,8 +14,9 @@ export async function callGemini(prompt: string): Promise<GeminiResponse> {
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
   try {
-    const proc = Bun.spawn(["gemini", "-y", "-o", "json", prompt], {
+    const proc = Bun.spawn(["gemini", "-y", "-o", "json"], {
       signal: controller.signal,
+      stdin: new TextEncoder().encode(prompt),
       stdout: "pipe",
       stderr: "pipe",
     })
