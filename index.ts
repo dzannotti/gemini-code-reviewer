@@ -60,6 +60,9 @@ async function main() {
   console.log(`Prompt length: ${prompt.length} chars`)
   console.log(`Existing comments: ${existingComments.length}`)
 
+  await Bun.write(`${DEBUG_DIR}/prompt.txt`, prompt)
+  console.log(`Prompt written to ${DEBUG_DIR}/prompt.txt`)
+
   let result: GeminiResult
   try {
     result = await callGemini(prompt)
