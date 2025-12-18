@@ -16,6 +16,6 @@ const IGNORED_PATTERNS = [
 
 export async function fetchDiff(base: string, head: string): Promise<string> {
   const excludes = IGNORED_PATTERNS.map((p) => `:(exclude)${p}`).join(" ")
-  const diff = await $`git diff ${base}...${head} -- . ${excludes}`.text()
+  const diff = await $`git diff origin/${base}...${head} -- . ${excludes}`.text()
   return diff
 }
