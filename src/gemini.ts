@@ -13,10 +13,13 @@ export async function callGemini(prompt: string): Promise<GeminiResponse> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
+  // Write prompt to temp file to avoid stdin/argument issues
+  const tempFile = `/tmp/gemini-prompt-${Date.now()}.txt`
+  await Bun.write(tempFile, prompt)
+
   try {
-    const proc = Bun.spawn(["gemini", "-y", "-o", "json"], {
+    const proc = Bun.spawn(["sh", "-c", `cat "${tempFile}" | gemini -y -o json`], {
       signal: controller.signal,
-      stdin: new TextEncoder().encode(prompt),
       stdout: "pipe",
       stderr: "pipe",
     })
@@ -37,5 +40,11 @@ export async function callGemini(prompt: string): Promise<GeminiResponse> {
     return JSON.parse(stdout) as GeminiResponse
   } finally {
     clearTimeout(timeout)
+    // Clean up temp file
+    try {
+      await Bun.file(tempFile).delete?.()
+    } catch {
+      // ignore cleanup errors
+    }
   }
 }
