@@ -39,7 +39,7 @@ async function postInlineComment(
     line: comment.line,
   })
 
-  await $`gh api repos/{owner}/{repo}/pulls/${prNumber}/comments -X POST --input - <<< ${payload}`
+  await $`echo ${payload} | gh api repos/{owner}/{repo}/pulls/${prNumber}/comments -X POST --input -`
 }
 
 function formatVerdict(verdict: ReviewOutput["verdict"]): string {

@@ -63,11 +63,11 @@ export async function callGemini(prompt: string): Promise<GeminiResult> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
-  const tempFile = `/tmp/gemini-prompt-${Date.now()}.txt`
+  const tempFile = `/tmp/gemini-prompt-${crypto.randomUUID()}.txt`
   await Bun.write(tempFile, prompt)
 
   try {
-    const proc = Bun.spawn(["sh", "-c", `cat "${tempFile}" | gemini -y -o stream-json`], {
+    const proc = Bun.spawn(["sh", "-c", `cat "${tempFile}" | gemini -y -m gemini-2.5-flash -o stream-json`], {
       signal: controller.signal,
       stdout: "pipe",
       stderr: "pipe",

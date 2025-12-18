@@ -72,15 +72,15 @@ jobs:
       - name: Collect debug files
         if: always()
         run: |
-          mkdir -p .gemini-debug
-          cp /tmp/gemini-*.json .gemini-debug/ 2>/dev/null || true
-          ls -la .gemini-debug/ || true
+          mkdir -p $GITHUB_WORKSPACE/.gemini-debug
+          cp /tmp/gemini-*.json $GITHUB_WORKSPACE/.gemini-debug/ 2>/dev/null || true
+          ls -la $GITHUB_WORKSPACE/.gemini-debug/ || true
 
       - name: Upload debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gemini-debug-${{ github.event.pull_request.number }}
-          path: .gemini-debug/
+          path: ${{ github.workspace }}/.gemini-debug/
           retention-days: 7
           if-no-files-found: ignore
