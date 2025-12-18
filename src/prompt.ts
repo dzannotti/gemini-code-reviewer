@@ -3,7 +3,7 @@ import type { ExistingComment } from "./types"
 
 export async function buildPrompt(
   prNumber: number,
-  prTitle: string,
+  _prTitle: string,
   base: string,
   _head: string
 ): Promise<{ prompt: string; existingComments: ExistingComment[] }> {
@@ -12,10 +12,7 @@ export async function buildPrompt(
     fetchExistingComments(prNumber),
   ])
 
-  const prompt = template
-    .replace("{{PR_NUMBER}}", String(prNumber))
-    .replace("{{PR_TITLE}}", prTitle)
-    .replace("{{BASE_BRANCH}}", base)
+  const prompt = template.replace("{{BASE_BRANCH}}", base)
 
   return { prompt, existingComments }
 }
