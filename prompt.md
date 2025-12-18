@@ -1,16 +1,18 @@
 # Code Review
 
-Review the following diff and respond with JSON.
+You are reviewing PR #{{PR_NUMBER}}: {{PR_TITLE}}
 
-## Diff
+## Instructions
 
-```diff
-{{DIFF}}
-```
+1. Fetch the diff for this PR using:
+   ```
+   git diff origin/{{BASE_BRANCH}}..HEAD
+   ```
+   Ignore lockfiles (package-lock.json, yarn.lock, bun.lockb, go.sum, etc.)
 
-## Output
+2. Review the changes for bugs, security issues, and code quality problems
 
-Respond with ONLY valid JSON:
+3. Respond with ONLY valid JSON (no markdown, no explanation):
 
 ```json
 {
@@ -20,6 +22,9 @@ Respond with ONLY valid JSON:
 }
 ```
 
+## Output Format
+
 - verdict: "SHIP", "FIX_THEN_SHIP", or "DONT_MERGE"
-- comments: array of {file, line, body} for issues found
+- comments: array of {file, line, body} for specific issues
 - If no issues, return empty comments and verdict "SHIP"
+- line must be a valid line number from the NEW version of the file (not the diff hunk header)

@@ -1,21 +1,21 @@
-import { fetchDiff } from "./steps/diff"
 import { fetchExistingComments } from "./steps/existing-comments"
 import type { ExistingComment } from "./types"
 
 export async function buildPrompt(
   prNumber: number,
-  _prTitle: string,
+  prTitle: string,
   base: string,
-  head: string
+  _head: string
 ): Promise<{ prompt: string; existingComments: ExistingComment[] }> {
-  const [diff, existingComments] = await Promise.all([
-    fetchDiff(base, head),
+  const [template, existingComments] = await Promise.all([
+    Bun.file("prompt.md").text(),
     fetchExistingComments(prNumber),
   ])
 
-  const template = await Bun.file("prompt.md").text()
-
-  const prompt = template.replace("{{DIFF}}", diff || "_No diff available._")
+  const prompt = template
+    .replace("{{PR_NUMBER}}", String(prNumber))
+    .replace("{{PR_TITLE}}", prTitle)
+    .replace("{{BASE_BRANCH}}", base)
 
   return { prompt, existingComments }
 }
