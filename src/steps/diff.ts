@@ -14,8 +14,8 @@ const IGNORED_PATTERNS = [
   "composer.lock",
 ]
 
-export async function fetchDiff(base: string, head: string): Promise<string> {
+export async function fetchDiff(base: string, _head: string): Promise<string> {
   const excludes = IGNORED_PATTERNS.map((p) => `:(exclude)${p}`).join(" ")
-  const diff = await $`git diff origin/${base}...${head} -- . ${excludes}`.text()
+  const diff = await $`git diff origin/${base}..HEAD -- . ${excludes}`.text()
   return diff
 }
