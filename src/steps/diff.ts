@@ -14,16 +14,8 @@ const IGNORED_PATTERNS = [
   "composer.lock",
 ]
 
-const MAX_DIFF_CHARS = 10000
-
 export async function fetchDiff(base: string, _head: string): Promise<string> {
   const excludes = IGNORED_PATTERNS.map((p) => `:(exclude)${p}`).join(" ")
   const diff = await $`git diff origin/${base}..HEAD -- . ${excludes}`.text()
-
-  if (diff.length > MAX_DIFF_CHARS) {
-    console.warn(`Diff truncated from ${diff.length} to ${MAX_DIFF_CHARS} chars`)
-    return diff.slice(0, MAX_DIFF_CHARS) + "\n\n... (diff truncated)"
-  }
-
   return diff
 }
