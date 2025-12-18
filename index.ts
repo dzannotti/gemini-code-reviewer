@@ -2,10 +2,16 @@ import { callGemini, GeminiTimeoutError, type GeminiResult } from "./src/gemini"
 import { buildPrompt } from "./src/prompt"
 import { parseReviewOutput, filterDuplicates, postReviewComments } from "./src/steps"
 import type { GeminiConversationStats } from "./src/types"
+import { mkdir } from "node:fs/promises"
 
 const DEBUG_DIR = ".gemini-debug"
 
+async function ensureDebugDir() {
+  await mkdir(DEBUG_DIR, { recursive: true })
+}
+
 async function dumpDebug(prompt: string, error: Error) {
+  await ensureDebugDir()
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
   await Bun.write(`${DEBUG_DIR}/prompt-${timestamp}.md`, prompt)
   await Bun.write(`${DEBUG_DIR}/error-${timestamp}.txt`, `${error.name}: ${error.message}\n\n${error.stack}`)
@@ -13,6 +19,7 @@ async function dumpDebug(prompt: string, error: Error) {
 }
 
 async function dumpConversation(result: GeminiResult) {
+  await ensureDebugDir()
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
   await Bun.write(`${DEBUG_DIR}/conversation-${timestamp}.json`, JSON.stringify(result.events, null, 2))
   await Bun.write(`${DEBUG_DIR}/stats-${timestamp}.json`, JSON.stringify(result.stats, null, 2))
@@ -60,6 +67,7 @@ async function main() {
   console.log(`Prompt length: ${prompt.length} chars`)
   console.log(`Existing comments: ${existingComments.length}`)
 
+  await ensureDebugDir()
   await Bun.write(`${DEBUG_DIR}/prompt.txt`, prompt)
   console.log(`Prompt written to ${DEBUG_DIR}/prompt.txt`)
 
