@@ -69,7 +69,14 @@ jobs:
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: bun run index.ts
 
-      - name: Upload conversation artifacts
+      - name: Collect debug files
+        if: always()
+        run: |
+          mkdir -p .gemini-debug
+          cp /tmp/gemini-*.json .gemini-debug/ 2>/dev/null || true
+          ls -la .gemini-debug/ || true
+
+      - name: Upload debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
