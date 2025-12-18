@@ -69,10 +69,11 @@ jobs:
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: bun run index.ts
 
-      - name: Upload debug artifacts
-        if: failure()
+      - name: Upload conversation artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gemini-debug-${{ github.event.pull_request.number }}
           path: .gemini-debug/
           retention-days: 7
+          if-no-files-found: ignore

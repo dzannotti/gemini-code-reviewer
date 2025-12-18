@@ -1,19 +1,36 @@
-import { callGemini, GeminiTimeoutError } from "./src/gemini"
+import { callGemini, GeminiTimeoutError, type GeminiResult } from "./src/gemini"
 import { buildPrompt } from "./src/prompt"
 import { parseReviewOutput, filterDuplicates, postReviewComments } from "./src/steps"
+import type { GeminiConversationStats } from "./src/types"
 
 const DEBUG_DIR = ".gemini-debug"
 
 async function dumpDebug(prompt: string, error: Error) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
-  const dir = DEBUG_DIR
+  await Bun.write(`${DEBUG_DIR}/prompt-${timestamp}.md`, prompt)
+  await Bun.write(`${DEBUG_DIR}/error-${timestamp}.txt`, `${error.name}: ${error.message}\n\n${error.stack}`)
+  console.error(`Debug files written to ${DEBUG_DIR}/`)
+}
 
-  await Bun.write(`${dir}/prompt-${timestamp}.md`, prompt)
-  await Bun.write(`${dir}/error-${timestamp}.txt`, `${error.name}: ${error.message}\n\n${error.stack}`)
+async function dumpConversation(result: GeminiResult) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
+  await Bun.write(`${DEBUG_DIR}/conversation-${timestamp}.json`, JSON.stringify(result.events, null, 2))
+  await Bun.write(`${DEBUG_DIR}/stats-${timestamp}.json`, JSON.stringify(result.stats, null, 2))
+}
 
-  console.error(`Debug files written to ${dir}/`)
-  console.error(`Prompt length: ${prompt.length} chars`)
-  console.error(`First 500 chars of prompt:\n${prompt.slice(0, 500)}...`)
+function logStats(stats: GeminiConversationStats) {
+  console.log("\n=== Gemini Conversation Stats ===")
+  console.log(`Turns: ${stats.turnCount}`)
+  console.log(`Token estimate: ~${stats.tokenEstimate}`)
+  if (stats.toolCalls.length > 0) {
+    console.log("Tool usage:")
+    for (const { name, count } of stats.toolCalls) {
+      console.log(`  ${name}: ${count}`)
+    }
+  } else {
+    console.log("Tool usage: none (direct response)")
+  }
+  console.log("=================================\n")
 }
 
 async function main() {
@@ -43,7 +60,7 @@ async function main() {
   console.log(`Prompt length: ${prompt.length} chars`)
   console.log(`Existing comments: ${existingComments.length}`)
 
-  let result
+  let result: GeminiResult
   try {
     result = await callGemini(prompt)
   } catch (err) {
@@ -57,7 +74,10 @@ async function main() {
     throw err
   }
 
-  console.log("Raw response:", result.response.slice(0, 200) + "...")
+  logStats(result.stats)
+  await dumpConversation(result)
+
+  console.log("Raw response:", result.response.slice(0, 500) + (result.response.length > 500 ? "..." : ""))
 
   const review = parseReviewOutput(result.response)
   console.log(`Verdict: ${review.verdict}`)

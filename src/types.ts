@@ -74,3 +74,21 @@ export interface PRContext {
   diff: string
   existingComments: ExistingComment[]
 }
+
+export interface GeminiStreamEvent {
+  type: "turn_start" | "tool_call" | "tool_result" | "text" | "result" | "error" | string
+  tool?: string
+  args?: Record<string, unknown>
+  text?: string
+  result?: {
+    response: string
+    stats?: GeminiStats
+  }
+  error?: string
+}
+
+export interface GeminiConversationStats {
+  turnCount: number
+  toolCalls: { name: string; count: number }[]
+  tokenEstimate: number
+}
