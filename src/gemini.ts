@@ -67,7 +67,7 @@ export async function callGemini(prompt: string): Promise<GeminiResult> {
   await Bun.write(tempFile, prompt)
 
   try {
-    const proc = Bun.spawn(["sh", "-c", `cat "${tempFile}" | gemini -y -m gemini-2.5-flash-lite -o stream-json`], {
+    const proc = Bun.spawn(["sh", "-c", `cat "${tempFile}" | gemini -y -m gemini-2.0-flash-lite -o stream-json`], {
       signal: controller.signal,
       stdout: "pipe",
       stderr: "pipe",
