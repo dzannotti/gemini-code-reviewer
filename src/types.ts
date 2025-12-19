@@ -45,16 +45,50 @@ interface FileStats {
   totalLinesRemoved: number
 }
 
+export type ReviewAction = "comment" | "edit" | "close" | "reopen"
+
 export interface ReviewComment {
+  file: string
+  line: number
+  actions: ReviewAction[]
+  body: string
+}
+
+export interface ReviewOutput {
+  summary: string
+  verdict: "SHIP" | "FIX_THEN_SHIP" | "DONT_MERGE"
+  comments: ReviewComment[]
+}
+
+export interface ExistingComment {
+  id: number
   path: string
   line: number
   body: string
-  confidence: number
-  category: "critical" | "quality" | "duplication" | "standards" | "architecture"
 }
 
-export interface ReviewResult {
-  comments: ReviewComment[]
-  summary: string
-  verdict: "SHIP" | "FIX_THEN_SHIP" | "DONT_MERGE"
+export interface PRContext {
+  number: number
+  base: string
+  head: string
+  diff: string
+  existingComments: ExistingComment[]
+}
+
+export interface GeminiStreamEvent {
+  type: "turn_start" | "tool_call" | "tool_result" | "text" | "result" | "error" | string
+  tool?: string
+  args?: Record<string, unknown>
+  text?: string
+  result?: {
+    response: string
+    stats?: GeminiStats
+  }
+  error?: string
+}
+
+export interface GeminiConversationStats {
+  turnCount: number
+  toolCalls: { name: string; count: number }[]
+  tokenEstimate: number
 }
