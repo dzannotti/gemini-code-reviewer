@@ -4,7 +4,7 @@ import { parseReviewOutput, filterDuplicates, postReviewComments } from "./src/s
 import type { GeminiConversationStats } from "./src/types"
 import { mkdir } from "node:fs/promises"
 
-const DEBUG_DIR = ".gemini-debug"
+const DEBUG_DIR = "gemini-debug"
 
 async function ensureDebugDir() {
   await mkdir(DEBUG_DIR, { recursive: true })
