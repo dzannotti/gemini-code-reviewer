@@ -63,8 +63,8 @@ jobs:
 
       - name: Run Review
         env:
-          REVIEW_BACKEND: copilot  # or "gemini"
-          REVIEW_MODEL: gpt-5-mini # optional, backend-specific
+          REVIEW_BACKEND: gemini  # or "copilot"
+          REVIEW_MODEL: gemini-2.0-flash-lite # optional, backend-specific
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           GITHUB_TOKEN: ${{ github.token }}
