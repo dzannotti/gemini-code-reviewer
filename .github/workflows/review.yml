@@ -51,7 +51,7 @@ jobs:
             npm install -g @google/gemini-cli
           fi
           if ! command -v copilot &> /dev/null; then
-            npm install -g @github/copilot-cli
+            npm install -g @github/copilot
           fi
 
       - name: Generate App Token
