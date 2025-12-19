@@ -1,4 +1,4 @@
-import { callGemini, GeminiTimeoutError, type GeminiResult } from "./src/gemini"
+import { callAgent, AgentTimeoutError, type AgentResult } from "./src/agent"
 import { buildPrompt } from "./src/prompt"
 import { parseReviewOutput, filterDuplicates, postReviewComments } from "./src/steps"
 import type { GeminiConversationStats } from "./src/types"
@@ -18,7 +18,7 @@ async function dumpDebug(prompt: string, error: Error) {
   console.error(`Debug files written to ${DEBUG_DIR}/`)
 }
 
-async function dumpConversation(result: GeminiResult) {
+async function dumpConversation(result: AgentResult) {
   await ensureDebugDir()
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
   await Bun.write(`${DEBUG_DIR}/conversation-${timestamp}.json`, JSON.stringify(result.events, null, 2))
@@ -49,7 +49,7 @@ async function main() {
 
   if (!prNumber) {
     console.log("No PR_NUMBER set, running in local test mode")
-    const result = await callGemini(`Say "Hello from Gemini!" and nothing else.`)
+    const result = await callAgent(`Say "Hello!" and nothing else.`)
     console.log("Response:", result.response)
     return
   }
@@ -71,11 +71,11 @@ async function main() {
   await Bun.write(`${DEBUG_DIR}/prompt.txt`, prompt)
   console.log(`Prompt written to ${DEBUG_DIR}/prompt.txt`)
 
-  let result: GeminiResult
+  let result: AgentResult
   try {
-    result = await callGemini(prompt)
+    result = await callAgent(prompt)
   } catch (err) {
-    if (err instanceof GeminiTimeoutError) {
+    if (err instanceof AgentTimeoutError) {
       await dumpDebug(err.prompt, err)
       throw new Error("Gemini timed out - debug files written. Check workflow artifacts.")
     }

@@ -19,7 +19,7 @@ interface RawReviewOutput {
 
 export function parseReviewOutput(raw: string): ReviewOutput {
   const match = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
-  const cleaned = match ? match[1].trim() : raw.trim()
+  const cleaned = match?.[1]?.trim() || raw.trim()
 
   const parsed: RawReviewOutput = JSON.parse(cleaned)
 
