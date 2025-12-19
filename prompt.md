@@ -16,12 +16,26 @@ Provide a code review for the given pull request.
 
 ---
 
-## Phase 1: Discovery
+## Phase 1: Diff Extraction
+
+**Goal**: Get the changes introduced by this PR
+
+**Actions**:
+1. Run the following command to get the diff:
+   ```
+   git diff origin/{{BASE_BRANCH}}..HEAD
+   ```
+2. Ignore lockfiles (package-lock.json, yarn.lock, bun.lockb, go.sum, Cargo.lock, etc.)
+3. Note which files were added, modified, or deleted
+
+---
+
+## Phase 2: Discovery
 
 **Goal**: Understand what this repo is about and what this PR builds
 
 **Actions**:
-1. Review the PR title and diff to understand the change
+1. Review the PR title and the diff from Phase 1
 2. Understand:
    - What problem are they solving?
    - What should the feature do?
@@ -29,7 +43,7 @@ Provide a code review for the given pull request.
 
 ---
 
-## Phase 2: Codebase Exploration
+## Phase 3: Codebase Exploration
 
 **Goal**: Understand relevant existing code and patterns at both high and low levels
 
@@ -41,7 +55,7 @@ Provide a code review for the given pull request.
    - UI patterns, testing approaches, or extension points relevant to the change
 
 2. Read key files to build deep understanding
-3. Note any project conventions from CLAUDE.md or docs/
+3. Note any project conventions from CLAUDE.md, AGENTS.md, or docs/
 
 ### Exploration Methodology
 
@@ -81,18 +95,7 @@ These comments already exist on this PR. Do not duplicate them.
 
 ---
 
-## Diff to Review
-
-Fetch the diff yourself by running:
-```
-git diff origin/{{BASE_BRANCH}}..HEAD
-```
-
-Ignore lockfiles (package-lock.json, yarn.lock, bun.lockb, go.sum, Cargo.lock, etc.)
-
----
-
-## Phase 3: Code Review
+## Phase 4: Code Review
 
 Review the diff focusing on:
 - Simplicity/DRY/elegance
