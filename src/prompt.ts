@@ -4,7 +4,7 @@ import type { ExistingComment } from "./types"
 function formatExistingComments(comments: ExistingComment[]): string {
   if (comments.length === 0) return "_No existing comments._"
   return comments
-    .map((c) => `- ${c.path}:${c.line}: ${c.body.slice(0, 100)}`)
+    .map((c) => `- ${c.path}:${c.line}: ${c.body}`)
     .join("\n")
 }
 
