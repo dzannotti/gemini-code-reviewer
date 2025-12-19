@@ -64,9 +64,10 @@ jobs:
       - name: Run Review
         env:
           REVIEW_BACKEND: copilot  # or "gemini"
-          REVIEW_MODEL: gpt-4.1    # optional, backend-specific
+          REVIEW_MODEL: gpt-5-mini # optional, backend-specific
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
